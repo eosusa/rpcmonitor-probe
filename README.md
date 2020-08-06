@@ -1,7 +1,8 @@
 # rpcmonitor-probe
-Probe to monitor status of all RPC endpoints for an EOSIO network and provide graphs/statistics regrading those nodes
+Probe to monitor status of all RPC endpoints for an EOSIO network and provide graphs/statistics regarding those nodes
+The probe submits telemetry to https://stats.eosusa.news
 
-Probe install instructions
+## Probe install instructions
 
 ```
 wget -qO- https://raw.githubusercontent.com/creationix/nvm/v0.34.0/install.sh | bash
