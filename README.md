@@ -3,7 +3,7 @@ Probe to monitor status of all RPC endpoints for an EOSIO network and provide gr
 The probe submits telemetry to https://stats.eosusa.news
 The probe is made of 2 components:
   * the rpcProxy will cycle trough a list of configured endpoints and has a built-in greylist
-  * the StressWay.py script runs as a cronjob and simple sends rpc queries to the EOSIO chain.
+  * the StressWax.py script runs as a cronjob and simple sends rpc queries to the EOSIO chain.
   
 ## Probe install instructions
 
