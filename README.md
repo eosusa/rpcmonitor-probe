@@ -4,6 +4,12 @@ The probe submits telemetry to https://stats.eosusa.news
 The probe is made of 2 components:
   * the rpcProxy will cycle trough a list of configured endpoints and has a built-in greylist
   * the StressWax.py script runs as a cronjob and simple sends rpc queries to the EOSIO chain.
+
+## Pre-requirement
+
+Your VPS hostname should be formatted as follows: probe-city-country or probe-city-region
+This is very important because it will be used as your identity on the public stats.eosusa.news site.
+Please make sure to add the same dns entry for it in /etc/hosts
   
 ## Probe install instructions
 
