@@ -1,0 +1,29 @@
+{
+  "name": "rpcproxy",
+  "version": "1.0.0",
+  "description": "this is an rpc proxy",
+  "main": "",
+  "dependencies": {
+    "axios": "^0.19.0",
+    "body-parser": "^1.19.0",
+    "cookie-parser": "^1.4.4",
+    "cors": "^2.8.5",
+    "eosjs": "^20.0.0",
+    "eosjs-ecc": "^4.0.4",
+    "express": "^4.17.1",
+    "human-interval": "^0.1.6",
+    "logging": "^3.2.0",
+    "roundround": "^0.2.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "sync": "exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": ""
+  },
+  "author": "",
+  "license": "ISC"
+}
