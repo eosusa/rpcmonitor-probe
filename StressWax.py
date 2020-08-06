@@ -72,7 +72,7 @@ def logToPrometheus():
       val_owner   = delphistats['rows'][i]['owner']
       payload     = {"code":"eosio.token","account":val_owner,"symbol":"WAX"} 
       response    = requests.post( url = RPCNODE+"/v1/chain/get_currency_balance" , headers=headers, data = json.dumps(payload)).json()
-      print(" %s has %s"%(val_owner,response))
+      #print(" %s has %s"%(val_owner,response))
       i+=1
       totcalls+=1
 
@@ -86,7 +86,7 @@ def logToPrometheus():
         val_author   = simpleass['rows'][i]['author']
         payload     = {"code":"eosio.token","account":val_owner,"symbol":"WAX"}
         response    = requests.post( url = RPCNODE+"/v1/chain/get_currency_balance" , headers=headers, data = json.dumps(payload)).json()
-        print("AUTHOR: %s has %s"%(val_author,response))
+        #print("AUTHOR: %s has %s"%(val_author,response))
         totcalls+=1
         PARAMS = {"json":true,"code":"simpleassets","scope":val_author,"table":"sassets","table_key":"","lower_bound":null,"upper_bound":null,"index_position":1,"key_type":"i64","limit":2000,"reverse":false,"show_payer":false}
         assets = retryRPC(PARAMS)
@@ -100,11 +100,11 @@ def logToPrometheus():
               categories[assets['rows'][j]['category']] = 1
           j+=1
         i+=1
-    print("We found the following categories: %s "%(json.dumps(categories, indent=2, sort_keys=True)))
+    #print("We found the following categories: %s "%(json.dumps(categories, indent=2, sort_keys=True)))
 
     proxy = requests.get( url = RPCNODE+"/metrics" ).json()
     totcalls+=1
-    print(json.dumps(proxy, indent=4, sort_keys=True))
+    #print(json.dumps(proxy, indent=4, sort_keys=True))
 
     # RPC PROXY METRICS
     for i in proxy:
