@@ -1,6 +1,5 @@
 module.exports = [
 'https://api.blokcrafters.io',
-'https://api.greeneosio.com',
 'https://api.wax.alohaeos.com',
 'https://api.wax.bountyblok.io',
 'https://api.waxeastern.cn',
