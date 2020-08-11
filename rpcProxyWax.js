@@ -4,13 +4,19 @@ const ax = require('axios')
 const sleep = ms => new Promise(res => setTimeout(res, ms))
 const rand = (min, max) => Math.floor(Math.random() * (Math.floor(max) - Math.ceil(min) + 1)) + Math.ceil(min)
 const randSelect = (arr) => arr[rand(0, arr.length - 1)]
-const logger = require('logging').default('rpcProxy')
-const endpoints = require('./endpoints-wax')
+const logger = require('logging').default('rpcProxyNew')
 app.use(express.text())
 app.use(express.json())
 var metrics = {}
 
+async function syncEndpoints(){
+  endpoints = (await ax.get('https://stats.eosusa.news/public/rpc/endpoints-wax.json')).data
+  console.log('Getting Remote Endpoints',endpoints)
+  setTimeout(syncEndpoints,86400000)
+}
+
 function pickEndpoint () {
+  logger.info(endpoints);
   endpoints.filter(el => !greylist.find(el2 => el === el2))
   return randSelect(endpoints)
 }
@@ -50,7 +56,7 @@ async function doQuery (req) {
     validateStatus: function (status) {
       var end = new Date() - start
       logger.info(`CALL ${endpoint} `+JSON.stringify(req.body)+' '+JSON.stringify(req.params)+` ${status}`)
-      if( metrics[endpoint] ) { 
+      if( metrics[endpoint] ) {
 	      if(metrics[endpoint][status]) {
 	        metrics[endpoint][status] += 1
 		//logger.info(`METRICS adding 1 to ${status} for ${endpoint}`)
@@ -61,7 +67,7 @@ async function doQuery (req) {
       } else {
 	      var codes = {}
 	      codes[status] = 1
-	      metrics[endpoint] = codes 
+	      metrics[endpoint] = codes
       }
       // Record total executed transactions
       if( metrics[endpoint]['total'] ) {
@@ -89,7 +95,7 @@ async function doQuery (req) {
 	} else {
 	  metrics[endpoint]['5000'] = 1
 	}
-    } else { 
+    } else {
         var codes = {}
         codes['5000'] = 1
 	//logger.error(codes)
@@ -114,7 +120,7 @@ async function doQuery (req) {
       addToGreylist(endpoint)
       await sleep(1000)
       return doQuery(req)
-    } else return response 
+    } else return response
   } else {
     // response.setHeader('RPCProxyEndpoint',endpoint)
     return response
@@ -122,6 +128,9 @@ async function doQuery (req) {
 }
 
 async function init () {
+
+  await syncEndpoints()
+
   app.all('*', async (req, res) => {
     if(req.url == '/metrics' ) {
        res.json(metrics)
