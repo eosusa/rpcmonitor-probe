@@ -4,13 +4,13 @@ const ax = require('axios')
 const sleep = ms => new Promise(res => setTimeout(res, ms))
 const rand = (min, max) => Math.floor(Math.random() * (Math.floor(max) - Math.ceil(min) + 1)) + Math.ceil(min)
 const randSelect = (arr) => arr[rand(0, arr.length - 1)]
-const logger = require('logging').default('rpcProxyNew')
+const logger = require('logging').default('rpcProxyHyperion')
 app.use(express.text())
 app.use(express.json())
 var metrics = {}
 
 async function syncEndpoints(){
-  endpoints = (await ax.get('https://wax.stats.eosusa.news/public/rpc/endpoints-wax.json')).data
+  endpoints = (await ax.get('https://wax.stats.eosusa.news/public/rpc/hyperion-wax.json')).data
   console.log('Getting Remote Endpoints',endpoints)
   setTimeout(syncEndpoints,86400000)
 }
@@ -141,7 +141,7 @@ async function init () {
       res.send(response.data)
     }
   })
-  app.listen(3055,"127.0.0.1", function () { logger.info('rpcProxy listening on port 3055') })
+  app.listen(3056,"127.0.0.1", function () { logger.info('rpcProxy listening on port 3055') })
 }
 
 init().catch((err) => { logger.error(err.message), process.exit() })
