@@ -15,7 +15,7 @@ import socket
 import uuid
 
 RPCNODE = "http://127.0.0.1:3055"
-PROMETHEUS_GATEWAY = 'http://stats.eosusa.news'
+PROMETHEUS_GATEWAY = 'http://wax.stats.eosusa.news'
 PROMETHEUS_JOB = 'waxproxy'
 
 DEBUG = False
