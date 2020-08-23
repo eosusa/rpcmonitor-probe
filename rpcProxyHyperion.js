@@ -5,9 +5,22 @@ const sleep = ms => new Promise(res => setTimeout(res, ms))
 const rand = (min, max) => Math.floor(Math.random() * (Math.floor(max) - Math.ceil(min) + 1)) + Math.ceil(min)
 const randSelect = (arr) => arr[rand(0, arr.length - 1)]
 const logger = require('logging').default('rpcProxyHyperion')
+const fs = require('fs-extra')
+
 app.use(express.text())
 app.use(express.json())
-var metrics = {}
+
+var metrics = require('./hyperion-metrics.json')
+if (!metrics) metrics = {}
+
+async function syncMetrics(){
+  try {
+    await fs.writeJson('./hyperion-metrics.json', metrics)
+  } catch (err) {
+    console.error(err)
+  }
+  setTimeout(syncMetrics,60000)
+}
 
 async function syncEndpoints(){
   endpoints = (await ax.get('https://wax.stats.eosusa.news/public/rpc/hyperion-wax.json')).data
@@ -130,6 +143,7 @@ async function doQuery (req) {
 async function init () {
 
   await syncEndpoints()
+  await syncMetrics()
 
   app.all('*', async (req, res) => {
     if(req.url == '/metrics' ) {

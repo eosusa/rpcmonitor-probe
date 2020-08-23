@@ -11,6 +11,7 @@
     "eosjs": "^20.0.0",
     "eosjs-ecc": "^4.0.4",
     "express": "^4.17.1",
+    "fs-extra": "^9.0.1",
     "human-interval": "^0.1.6",
     "logging": "^3.2.0",
     "roundround": "^0.2.0"

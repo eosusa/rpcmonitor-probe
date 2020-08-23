@@ -3,7 +3,8 @@ Probe to monitor status of all RPC endpoints for an EOSIO network and provide gr
 The probe submits telemetry to https://stats.eosusa.news
 
 The probe is made of 2 components:
-  * the rpcProxy will cycle trough a list of configured endpoints and has a built-in greylist
+  * the rpcProxy will cycle trough a remote list of configured endpoints and has a built-in greylist
+    the endpoint list is dynamically updated and provided by https://wax.stats.eosusa.news
   * the StressWax.py script runs as a cronjob and simple sends rpc queries to the EOSIO chain.
 
 Note: If you wish to run a community probe, please contact @EOSUSA_Michael on Telegram
@@ -29,6 +30,14 @@ npm install -g pm2
 pm2 get pm2-logrotate ; pm2 set pm2-logrotate:retain 5 ; pm2 set pm2-logrotate:max_size 500M
 npm i
 ```
+
+The probe needs to persist the metrics to avoid resets on restart.
+create the metrics json files
+```
+cp example.metrics.json metrics.json
+cp example.hyperion-metrics.json hyperion-metrics.json
+```
+
 Start the proxy and make it a systemd service
 ```
 pm2 start ecosystem.config.js
