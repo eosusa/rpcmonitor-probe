@@ -14,9 +14,15 @@ var metrics = require('./metrics.json')
 if (!metrics) metrics = {}
 
 async function syncEndpoints(){
-  endpoints = (await ax.get('https://wax.stats.eosusa.news/public/rpc/endpoints-wax.json')).data
-  console.log('Getting Remote Endpoints',endpoints)
-  setTimeout(syncEndpoints,86400000)
+  try {
+     endpoints = (await ax.get('https://wax.stats.eosusa.news/public/rpc/endpoints-wax.json')).data
+     console.log('Getting Remote Endpoints',endpoints)
+     setTimeout(syncEndpoints,86400000)
+  } catch (err) {
+    console.erro(err)
+    // Retry every 5 mins
+    setTimeout(syncEndpoints,300000)
+  }
 }
 
 async function syncMetrics(){
