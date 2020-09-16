@@ -7,6 +7,8 @@ const randSelect = (arr) => arr[rand(0, arr.length - 1)]
 const logger = require('logging').default('rpcProxyHyperion')
 const fs = require('fs-extra')
 
+ax.defaults.timeout = 5000
+
 app.use(express.text())
 app.use(express.json())
 
