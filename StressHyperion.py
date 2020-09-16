@@ -42,10 +42,13 @@ def logToPrometheus():
     print("Stressing hyperion endpoints...")
     i=0
     while i < 40:
-      history=requests.get(url = RPCNODE+"/v2/history/get_actions?account=producerjson", timeout=30) 
-      sys.stdout.write(".")
-      sys.stdout.flush()
-      totcalls+=1
+      try:
+        history=requests.get(url = RPCNODE+"/v2/history/get_actions?account=producerjson", timeout=30) 
+        sys.stdout.write(".")
+        sys.stdout.flush()
+        totcalls+=1
+      except:
+          traceback.print_exc()
       i+=1
 
     print("")

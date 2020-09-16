@@ -44,7 +44,7 @@ def retryRPC( payload ):
         code = 200
       else:
         # if rows doesnt exist then we got an error, so we enter retry mode
-        code = len(rest_api['rows'][0])
+        code = 0
           
       if code != 200:
         if(retry > 10): return rest_api
