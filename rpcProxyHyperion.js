@@ -9,8 +9,14 @@ const fs = require('fs-extra')
 
 ax.defaults.timeout = 5000
 
-app.use(express.text())
-app.use(express.json())
+app.use(function(req, res, next) {
+  if (!req.headers['content-type']) req.headers['content-type'] = 'application/json'
+  if (req.headers['content-type'] === 'application/x-www-form-urlencoded') req.headers['content-type'] = 'application/json'
+  next()
+})
+app.use(express.text({limit:"20mb"}))
+app.use(express.json({limit:"20mb",strict:false}))
+app.set('trust proxy', 1)
 
 var metrics = require('./hyperion-metrics.json')
 if (!metrics) metrics = {}
@@ -37,7 +43,7 @@ async function syncEndpoints(){
 }
 
 function pickEndpoint () {
-  logger.info(endpoints);
+  //logger.info(endpoints);
   endpoints.filter(el => !greylist.find(el2 => el === el2))
   return randSelect(endpoints)
 }
@@ -122,12 +128,12 @@ async function doQuery (req) {
 	//logger.error(codes)
         metrics[endpoint] = codes
     }
-    addToGreylist(endpoint)
+    //addToGreylist(endpoint)
   })
   if (!response || !isObject(response.data)) {
     //if (response) logger.error('Unexpected Response:',response.data)
     await sleep(1000)
-    addToGreylist(endpoint)
+    //addToGreylist(endpoint)
     return doQuery(req)
   } else if (response.status == 500) {
     logger.error('')
@@ -138,7 +144,7 @@ async function doQuery (req) {
     const repeatCodes = [3081001, 3010008]
     if (repeatCodes.find(el => el === response.data.error.code)) {
       //console.log('Found Repeat err code:',response.data.error.code)
-      addToGreylist(endpoint)
+      //addToGreylist(endpoint)
       await sleep(1000)
       return doQuery(req)
     } else return response
