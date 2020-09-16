@@ -45,8 +45,9 @@ pm2 startup
 pm2 save
 ```
 
-add cronjob
+add cronjobs
 ```
 */5 * * * * /root/rpcmonitor-probe/StressWax.py -d >> /var/log/probe.log 2>&1
+*/30 * * * * /root/rpcmonitor-probe/StressHyperion.py -d >> /var/log/probe-hyp.log 2>&1
 ```
 
