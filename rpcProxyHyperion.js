@@ -36,7 +36,7 @@ async function syncEndpoints(){
      console.log('Getting Remote Endpoints',endpoints)
      setTimeout(syncEndpoints,86400000)
   } catch (err) {
-    console.erro(err)
+    console.error(err)
     // Retry every 5 mins
     setTimeout(syncEndpoints,300000)
   }
