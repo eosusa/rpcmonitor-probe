@@ -14,8 +14,8 @@ app.use(function(req, res, next) {
   if (req.headers['content-type'] === 'application/x-www-form-urlencoded') req.headers['content-type'] = 'application/json'
   next()
 })
-app.use(express.text({limit:"20mb"}))
-app.use(express.json({limit:"20mb",strict:false}))
+//app.use(express.text({limit:"20mb"}))
+//app.use(express.json({limit:"20mb",strict:false}))
 app.set('trust proxy', 1)
 
 var metrics = require('./hyperion-metrics.json')
