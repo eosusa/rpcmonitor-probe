@@ -1,6 +1,8 @@
 const express = require('express')
 var app = express()
 const ax = require('axios')
+const https = require('https');
+const http = require('http');
 const sleep = ms => new Promise(res => setTimeout(res, ms))
 const rand = (min, max) => Math.floor(Math.random() * (Math.floor(max) - Math.ceil(min) + 1)) + Math.ceil(min)
 const randSelect = (arr) => arr[rand(0, arr.length - 1)]
@@ -8,6 +10,8 @@ const logger = require('logging').default('rpcProxyHyperion')
 const fs = require('fs-extra')
 
 ax.defaults.timeout = 5000
+ax.defaults.httpAgent  = new http.Agent({ timeout: 5000 });
+ax.defaults.httpsAgent = new https.Agent({ timeout: 5000 });
 
 app.use(function(req, res, next) {
   if (!req.headers['content-type']) req.headers['content-type'] = 'application/json'
@@ -18,8 +22,14 @@ app.use(function(req, res, next) {
 //app.use(express.json({limit:"20mb",strict:false}))
 app.set('trust proxy', 1)
 
-var metrics = require('./hyperion-metrics.json')
-if (!metrics) metrics = {}
+var metrics = {}
+try
+{
+  metrics = require('./hyperion-metrics.json')
+}catch (e) {
+  console.log(e)
+  metrics = {}
+}
 
 async function syncMetrics(){
   try {

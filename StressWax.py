@@ -13,6 +13,7 @@ import requests, json, time, os, sys, getopt
 import traceback
 import socket
 import uuid
+import socket
 
 RPCNODE = "http://127.0.0.1:3055"
 PROMETHEUS_GATEWAY = 'http://wax.stats.eosusa.news'
@@ -123,6 +124,16 @@ if __name__ == '__main__':
     null = None
     false = False
     true = True # fix the json below
+
+    try:
+      s = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+      ## Create an abstract socket, by prefixing it with null. 
+      s.bind( '\0stresswax_notify_lock') 
+    except socket.error as e:
+      error_code = e.args[0]
+      error_string = e.args[1]
+      print "Process already running (%d:%s ). Exiting" % ( error_code, error_string) 
+      sys.exit (0) 
 
     try:
         opts, args = getopt.getopt(sys.argv[1:], "hdt:", ["help", "debug", "test"])

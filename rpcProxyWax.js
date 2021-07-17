@@ -1,12 +1,16 @@
 const express = require('express')
 var app = express()
 const ax = require('axios')
+const https = require('https');
+const http = require('http');
 const sleep = ms => new Promise(res => setTimeout(res, ms))
 const rand = (min, max) => Math.floor(Math.random() * (Math.floor(max) - Math.ceil(min) + 1)) + Math.ceil(min)
 const randSelect = (arr) => arr[rand(0, arr.length - 1)]
 const logger = require('logging').default('rpcProxyNew')
 const fs = require('fs-extra')
-ax.defaults.timeout = 5000
+ax.defaults.timeout    = 5000
+ax.defaults.httpAgent  = new http.Agent({ timeout: 5000 });
+ax.defaults.httpsAgent = new https.Agent({ timeout: 5000 });
 
 app.use(function(req, res, next) {
   if (!req.headers['content-type']) req.headers['content-type'] = 'application/json'
@@ -17,8 +21,14 @@ app.use(express.text({limit:"20mb"}))
 app.use(express.json({limit:"20mb",strict:false}))
 app.set('trust proxy', 1)
 
-var metrics = require('./metrics.json')
-if (!metrics) metrics = {}
+var metrics = {}
+try
+{
+  metrics = require('./metrics.json')
+}catch (e) {
+  console.log(e)
+  metrics = {}
+}
 
 async function syncEndpoints(){
   try {
@@ -96,18 +106,9 @@ async function doQuery (req) {
 	      metrics[endpoint] = codes
       }
       // Record total executed transactions
-      if( metrics[endpoint]['total'] ) {
-        metrics[endpoint]['total'] += 1
-      }else{
-        metrics[endpoint]['total'] = 1
-      }
-
+      if( metrics[endpoint]['total'] ) { metrics[endpoint]['total'] += 1 } else { metrics[endpoint]['total'] = 1 }
       // Record response times
-      if( metrics[endpoint]['elapsed'] ) {
-        metrics[endpoint]['elapsed'] += end
-      }else{
-        metrics[endpoint]['elapsed'] = end
-      }
+      if( metrics[endpoint]['elapsed'] ) { metrics[endpoint]['elapsed'] += end } else { metrics[endpoint]['elapsed'] = end }
 
       return status < 501
     },
@@ -129,6 +130,7 @@ async function doQuery (req) {
     }
     //addToGreylist(endpoint)
   })
+
   if (!response || !isObject(response.data)) {
     //if (response) logger.error('Unexpected Response:',response.data)
     await sleep(1000)
