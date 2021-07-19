@@ -39,7 +39,11 @@ def retryRPC( payload ):
     retry=1
     code=-1
     while code != 200:
-      rest_api  = requests.post( url = RPCNODE+"/v1/chain/get_table_rows", headers=headers, data = json.dumps(payload)).json()
+      try:
+          rest_api  = requests.post( url = RPCNODE+"/v1/chain/get_table_rows", timeout=10, headers=headers, data = json.dumps(payload)).json()
+      except:
+          code = 0
+          
       # if rows doesnt exist we have an ERROR
       if "rows" in rest_api:
         code = 200
@@ -70,12 +74,15 @@ def logToPrometheus():
     delphistats = retryRPC(PARAMS_DELPHISTATS) 
     i=0
     while i < len(delphistats['rows']):
-      val_owner   = delphistats['rows'][i]['owner']
-      payload     = {"code":"eosio.token","account":val_owner,"symbol":"WAX"} 
-      response    = requests.post( url = RPCNODE+"/v1/chain/get_currency_balance" , headers=headers, data = json.dumps(payload)).json()
-      #print(" %s has %s"%(val_owner,response))
+      try:
+        val_owner   = delphistats['rows'][i]['owner']
+        payload     = {"code":"eosio.token","account":val_owner,"symbol":"WAX"} 
+        response    = requests.post( url = RPCNODE+"/v1/chain/get_currency_balance" , timeout=10, headers=headers, data = json.dumps(payload)).json()
+        #print(" %s has %s"%(val_owner,response))
+        totcalls+=1
+      except:
+        pass # Do Nothing
       i+=1
-      totcalls+=1
 
     print("grabing simple assets authors.....")
 
@@ -84,22 +91,25 @@ def logToPrometheus():
     i=0
     categories = {}
     while i < len(simpleass['rows']):
-        val_author   = simpleass['rows'][i]['author']
-        payload     = {"code":"eosio.token","account":val_owner,"symbol":"WAX"}
-        response    = requests.post( url = RPCNODE+"/v1/chain/get_currency_balance" , headers=headers, data = json.dumps(payload)).json()
-        #print("AUTHOR: %s has %s"%(val_author,response))
-        totcalls+=1
-        PARAMS = {"json":true,"code":"simpleassets","scope":val_author,"table":"sassets","table_key":"","lower_bound":null,"upper_bound":null,"index_position":1,"key_type":"i64","limit":2000,"reverse":false,"show_payer":false}
-        assets = retryRPC(PARAMS)
-        totcalls+=1
-        j=0
-        while j < len(assets['rows']):
-          if (len(assets['rows'][j]) > 0):
-            if ( assets['rows'][j]['category'] in categories ):
-              categories[assets['rows'][j]['category']] += 1
-            else:
-              categories[assets['rows'][j]['category']] = 1
-          j+=1
+        try:
+          val_author   = simpleass['rows'][i]['author']
+          payload     = {"code":"eosio.token","account":val_owner,"symbol":"WAX"}
+          response    = requests.post( url = RPCNODE+"/v1/chain/get_currency_balance" , timeout=10, headers=headers, data = json.dumps(payload)).json()
+          #print("AUTHOR: %s has %s"%(val_author,response))
+          totcalls+=1
+          PARAMS = {"json":true,"code":"simpleassets","scope":val_author,"table":"sassets","table_key":"","lower_bound":null,"upper_bound":null,"index_position":1,"key_type":"i64","limit":2000,"reverse":false,"show_payer":false}
+          assets = retryRPC(PARAMS)
+          totcalls+=1
+          j=0
+          while j < len(assets['rows']):
+            if (len(assets['rows'][j]) > 0):
+              if ( assets['rows'][j]['category'] in categories ):
+                categories[assets['rows'][j]['category']] += 1
+              else:
+                categories[assets['rows'][j]['category']] = 1
+            j+=1
+        except:
+          pass # Do nothing
         i+=1
     #print("We found the following categories: %s "%(json.dumps(categories, indent=2, sort_keys=True)))
 
